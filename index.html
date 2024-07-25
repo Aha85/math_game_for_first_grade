@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Game for Kids</title>
+    <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const emojis = ['🦄', '🌟', '🍎', '🤖', '🐶'];
+
+        const EmojiNumber = ({ number, emoji }) => (
+            <div className="flex flex-col items-center">
+                <div className="text-4xl mb-2">{number}</div>
+                <div className="grid grid-cols-5 gap-1">
+                    {[...Array(number)].map((_, i) => (
+                        <span key={i} role="img" aria-label={emoji} className="text-2xl">
+                            {emoji}
+                        </span>
+                    ))}
+                </div>
+            </div>
+        );
+
+        const MathGame = () => {
+            const [num1, setNum1] = React.useState(0);
+            const [num2, setNum2] = React.useState(0);
+            const [userAnswer, setUserAnswer] = React.useState('');
+            const [feedback, setFeedback] = React.useState('');
+            const [score, setScore] = React.useState(0);
+            const [emoji, setEmoji] = React.useState(emojis[0]);
+
+            const generateProblem = () => {
+                setNum1(Math.floor(Math.random() * 10) + 1);
+                setNum2(Math.floor(Math.random() * 10) + 1);
+                setEmoji(emojis[Math.floor(Math.random() * emojis.length)]);
+                setUserAnswer('');
+                setFeedback('');
+            };
+
+            React.useEffect(() => {
+                generateProblem();
+            }, []);
+
+            const checkAnswer = () => {
+                const correctAnswer = num1 + num2;
+                if (parseInt(userAnswer) === correctAnswer) {
+                    setFeedback('WELL DONE!! 😃');
+                    setScore(score + 1);
+                    setTimeout(generateProblem, 1500);
+                } else {
+                    setFeedback('Try again! 😢');
+                }
+            };
+
+            return (
+                <div className="p-6 max-w-md mx-auto bg-white rounded-xl shadow-md space-y-6">
+                    <h1 className="text-3xl font-bold text-center text-purple-600">Math Game</h1>
+                    
+                    <div className="flex justify-around items-center">
+                        <EmojiNumber number={num1} emoji={emoji} />
+                        <div className="text-4xl font-bold">+</div>
+                        <EmojiNumber number={num2} emoji={emoji} />
+                    </div>
+                    
+                    <div className="text-center text-3xl font-bold">
+                        {num1} + {num2} = ?
+                    </div>
+                    
+                    <input
+                        type="number"
+                        value={userAnswer}
+                        onChange={(e) => setUserAnswer(e.target.value)}
+                        className="w-full p-3 border-2 border-purple-300 rounded-lg text-center text-xl"
+                        placeholder="Your answer"
+                    />
+                    
+                    <button 
+                        onClick={checkAnswer}
+                        className="w-full p-3 bg-purple-500 text-white rounded-lg text-xl font-bold hover:bg-purple-600 transition duration-300"
+                    >
+                        Check Answer
+                    </button>
+                    
+                    {feedback && (
+                        <div className={`text-center text-2xl font-bold p-3 rounded-lg ${feedback.includes('WELL DONE') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {feedback}
+                        </div>
+                    )}
+                    
+                    <div className="text-center text-2xl font-semibold">
+                        Score: {score}
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<MathGame />, document.getElementById('root'));
+    </script>
+</body>
+</html>
